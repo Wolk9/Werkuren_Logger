@@ -62,6 +62,7 @@ export default function App() {
 
   return (
     <div className="App">
+      
       <Card>
         <center>
           <h3>DASKO Inklok App</h3>
@@ -73,16 +74,14 @@ export default function App() {
           setUserSelection={setUserSelection}
           users={users}
         />
-
-        {showUserTable && <UserTable users={users} />}
-        <EventSelect
+        {userSelection && (<EventSelect
           eventSelection={eventSelection}
           setEventSelection={setEventSelection}
           events={events}
-        />
-
+          userSelection={userSelection}
+        />)}
         {userSelection && (
-          <LogTable logs={logs} userSelection={userSelection} />
+          <LogTable logs={logs} users={users} events={events} userSelection={userSelection} />
         )}
       </Card>
     </div>
