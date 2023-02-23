@@ -7,7 +7,7 @@ import "primereact/resources/primereact.min.css";
 //icons
 import "primeicons/primeicons.css";
 import { Card } from "primereact/card";
-import UserTable from "./components/UserTable";
+
 import LogTable from "./components/LogTable";
 import UserSelect from "./components/UserSelect";
 import { findAllUsers } from "./services/users.js";

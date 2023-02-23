@@ -12,7 +12,8 @@ const TableItem = (props) => {
 
   const timeDate = () => {
 
-    let stampObj = new Date(timestamp.seconds);
+    let stampObj = timestamp.toDate();
+ 
     console.log(timestamp.seconds, stampObj);
 
 
