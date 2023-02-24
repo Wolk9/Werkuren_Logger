@@ -63,12 +63,7 @@ export default function App() {
   return (
     <div className="App">
       
-      <Card>
-        <center>
-          <h3>DASKO Inklok App</h3>
-        </center>
-      </Card>
-      <Card>
+      <Card title="Dasko Inklok App">
         <UserSelect
           userSelection={userSelection}
           setUserSelection={setUserSelection}

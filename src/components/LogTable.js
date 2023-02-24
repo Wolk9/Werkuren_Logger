@@ -1,21 +1,46 @@
-import { DataTable, Column } from "primereact/datatable";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+
 import { Card } from "primereact/card";
+import { useState } from "react";
 
 const deleteEvent = (e) => {
   console.log("Clicked delete for:", e);
-}
+};
 
 const TableItem = (props) => {
   const { eventId, timestamp, userId, logId } = props;
 
-  console.log("TableItem props: ", props)
+  console.log("TableItem props: ", props);
 
-  const timeDate = () => {
+  return (
+    <tr key={logId}>
+      <td>{eventId}</td>
+      <td>{timeDate()}</td>
+      <td>
+        <i className="pi pi-delete-left" style={{ color: "red" }}></i>
+      </td>
+    </tr>
+  );
+};
 
+const LogTable = (props) => {
+  const { logs, users, events, userSelection, eventSelection } = props;
+  const [selectedLog, setSelectedLog] = useState(null);
+  console.log("LogTable props: ", props);
+
+  const selectedLogs = logs.filter((log) => {
+    return log.userId == userSelection;
+  });
+
+  const selectedUser = users.filter((user) => {
+    return user.userId == userSelection;
+  });
+
+  const timeDate = (timestamp) => {
     let stampObj = timestamp.toDate();
- 
-    console.log(timestamp.seconds, stampObj);
 
+    console.log(timestamp.seconds, stampObj);
 
     let day = stampObj.getDate();
     let month = stampObj.getMonth() + 1;
@@ -23,41 +48,50 @@ const TableItem = (props) => {
     let hour = stampObj.getHours();
     let minutes = stampObj.getMinutes();
 
-    return `${day}-${month}-${year} ${hour}:${minutes}`
-  }
+    return `${day}-${month}-${year} ${hour}:${minutes}`;
+  };
 
-  return (
-    <tr key={logId} >
-            <td>{eventId}</td>
-            <td>{timeDate()}</td>
-            <td><i className="pi pi-delete-left"style={{ color: 'red' }} ></i></td>
-          </tr>
-  )
-}
+  console.log(
+    "1 events:",
+    events,
+    "logs:",
+    logs,
+    "users:",
+    users,
+    "userSelection:",
+    userSelection,
+    "selectedLogs:",
+    selectedLogs.timestamp,
+    "selectedUser",
+    selectedUser
+  );
 
-const LogTable = (props) => {
-  const { logs, users, events, userSelection, eventSelection } = props;
-  
-  console.log("LogTable props: ", props)
+  // selectedLogs.map(
+  //   (x, i) => (x[i].timestamp.seconds = timeDate(x[i].timestamp))
+  // );
 
-  console.log("1 events:", events, "logs:", logs, "users:", users, "userSelection:", userSelection, "selectedLogs:", selectedLogs, "selectedUser", selectedUser );
+  const stampBodyTemplate = (rowData) => {
+    return timeDate(rowData.timestamp);
+  };
 
+  const eventBodyTemplate = (rowData) => {
+    return events.find((x) => x.eventId == rowData.eventId).eventType;
+  };
 
-  const selectedLogs = logs.filter( log => {
-    return log.userId == userSelection
-  })
-
-  const selectedUser = users.filter( user => {
-     return user.userId == userSelection
-  })
-
-
-  console.log("2 events:", events, "logs:", logs, "users:", users, "userSelection:", userSelection, "selectedLogs:", selectedLogs, "selectedUser", selectedUser);
-
-  
   return (
     <Card title={selectedUser[0].firstName}>
-      <table>
+      <p>Selected Log: {selectedLog}</p>
+      <DataTable
+        value={selectedLogs}
+        selectionMode="single"
+        selection={selectedLog}
+        onSelectionChange={(e) => setSelectedLog(e.value)}
+        dataKey="id"
+      >
+        <Column header="begin/einde" body={eventBodyTemplate}></Column>
+        <Column header="datum/tijd" body={stampBodyTemplate}></Column>
+      </DataTable>
+      {/* <table>
         <thead>
           <tr>
             <th>In/Uit</th>
@@ -65,9 +99,17 @@ const LogTable = (props) => {
           </tr>
         </thead>
         <tbody>
-          {selectedLogs.map((log)=><TableItem key={log.id} logId={log.logId} timestamp={log.timestamp} userId={log.userId} onclick={deleteEvent(log.logId)}/>)} 
+          {selectedLogs.map((log) => (
+            <TableItem
+              key={log.id}
+              logId={log.logId}
+              timestamp={log.timestamp}
+              userId={log.userId}
+              onclick={deleteEvent(log.logId)}
+            />
+          ))}
         </tbody>
-      </table>
+      </table> */}
     </Card>
   );
 };

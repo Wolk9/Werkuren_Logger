@@ -1,13 +1,6 @@
 import React from "react";
 import { Button } from "primereact/button";
 import {
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth';
-import {
   getFirestore,
   collection,
   addDoc,
@@ -19,45 +12,30 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
-} from 'firebase/firestore';
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from 'firebase/storage';
-import {
-  getMessaging,
-  getToken,
-  onMessage
-} from 'firebase/messaging'; 
-import { getDb } from "../services/db.js";
+} from "firebase/firestore";
 
 const EventSelect = (props) => {
   const { eventSelection, setEventSelection, events, userSelection } = props;
-  console.log("EventSelect props: ", props)
+  console.log("EventSelect props: ", props);
 
   const handleClickButton = (e) => {
-    console.log("clicked!", e)
-    saveEvent()
-    setEventSelection(e.eventId)
+    console.log("clicked!", e);
+    setEventSelection(e.eventId);
+    saveEvent();
+  };
+  // Saves a new message to Cloud Firestore.
+  async function saveEvent() {
+    // Add a new message entry to the Firebase database.
+    try {
+      await addDoc(collection(getFirestore(), "logs"), {
+        userId: userSelection,
+        eventId: eventSelection,
+        timestamp: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Error writing new message to Firebase Database", error);
+    }
   }
-
-// Saves a new message to Cloud Firestore.
-async function saveEvent() {
-  // Add a new message entry to the Firebase database.
-  try {
-    await addDoc(collection(getFirestore(), 'logs'), {
-      userId: userSelection,
-      eventId: eventSelection,
-      timestamp: serverTimestamp()
-    });
-  }
-  catch(error) {
-    console.error('Error writing new message to Firebase Database', error);
-  }
-}
-
 
   const SelectedButton = () => {
     return (
@@ -74,6 +52,7 @@ async function saveEvent() {
       </div>
     );
   };
+
   return (
     <div>
       {!eventSelection ? (
