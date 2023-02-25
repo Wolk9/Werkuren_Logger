@@ -7,6 +7,7 @@ import "primereact/resources/themes/tailwind-light/theme.css";
 import "primereact/resources/primereact.min.css";
 //icons
 import "primeicons/primeicons.css";
+// import "primeflex/primeflex.css";
 import { Card } from "primereact/card";
 import { doc, deleteDoc } from "firebase/firestore";
 import { getDb } from "./services/db";
