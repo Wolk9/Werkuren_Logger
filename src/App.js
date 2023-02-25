@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import "./styles.css";
 //theme primereact
-import "primereact/resources/themes/lara-light-indigo/theme.css";
+// import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/themes/tailwind-light/theme.css";
 //core
 import "primereact/resources/primereact.min.css";
 //icons
 import "primeicons/primeicons.css";
 import { Card } from "primereact/card";
+import { doc, deleteDoc } from "firebase/firestore";
+import { getDb } from "./services/db";
 
 import LogTable from "./components/LogTable";
 import UserSelect from "./components/UserSelect";
@@ -21,6 +24,7 @@ export default function App() {
   const [events, setEvents] = React.useState(null);
   const [userSelection, setUserSelection] = React.useState(null);
   const [eventSelection, setEventSelection] = React.useState(null);
+  const [toBeDeletedId, setToBeDeletedId] = React.useState(null);
   const [showUserTable] = React.useState(false);
   const [timeType, setTimeType] = React.useState(null);
   const [loadingUsers, setLoadingUsers] = React.useState(false);
@@ -58,25 +62,52 @@ export default function App() {
     getLogs();
   }, []);
 
+  React.useEffect(() => {
+    getEvents();
+    getUsers();
+    getLogs();
+  }, [toBeDeletedId, eventSelection]);
+
+  const deleteEvent = (e) => {
+    console.log("Clicked delete for:", e);
+    const docRef = doc(getDb(), "logs", e);
+
+    deleteDoc(docRef)
+      .then(() => {
+        setToBeDeletedId(e);
+        console.log("Entire Document has been deleted successfully.");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   if (!users) return [];
 
   return (
     <div className="App">
-      
       <Card title="Dasko Inklok App">
         <UserSelect
           userSelection={userSelection}
           setUserSelection={setUserSelection}
           users={users}
         />
-        {userSelection && (<EventSelect
-          eventSelection={eventSelection}
-          setEventSelection={setEventSelection}
-          events={events}
-          userSelection={userSelection}
-        />)}
         {userSelection && (
-          <LogTable logs={logs} users={users} events={events} userSelection={userSelection} />
+          <EventSelect
+            eventSelection={eventSelection}
+            setEventSelection={setEventSelection}
+            events={events}
+            userSelection={userSelection}
+          />
+        )}
+        {userSelection && (
+          <LogTable
+            deleteEvent={deleteEvent}
+            logs={logs}
+            users={users}
+            events={events}
+            userSelection={userSelection}
+          />
         )}
       </Card>
     </div>

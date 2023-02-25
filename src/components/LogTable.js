@@ -1,31 +1,12 @@
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-
+import { getFirestore, doc, deleteDoc } from "firebase/firestore";
 import { Card } from "primereact/card";
 import { useState } from "react";
 
-const deleteEvent = (e) => {
-  console.log("Clicked delete for:", e);
-};
-
-const TableItem = (props) => {
-  const { eventId, timestamp, userId, logId } = props;
-
-  console.log("TableItem props: ", props);
-
-  return (
-    <tr key={logId}>
-      <td>{eventId}</td>
-      <td>{timeDate()}</td>
-      <td>
-        <i className="pi pi-delete-left" style={{ color: "red" }}></i>
-      </td>
-    </tr>
-  );
-};
-
 const LogTable = (props) => {
-  const { logs, users, events, userSelection, eventSelection } = props;
+  const { deleteEvent, logs, users, events, userSelection, eventSelection } =
+    props;
   const [selectedLog, setSelectedLog] = useState(null);
   console.log("LogTable props: ", props);
 
@@ -40,7 +21,7 @@ const LogTable = (props) => {
   const timeDate = (timestamp) => {
     let stampObj = timestamp.toDate();
 
-    console.log(timestamp.seconds, stampObj);
+    // console.log(timestamp.seconds, stampObj);
 
     let day = stampObj.getDate();
     let month = stampObj.getMonth() + 1;
@@ -78,38 +59,21 @@ const LogTable = (props) => {
     return events.find((x) => x.eventId == rowData.eventId).eventType;
   };
 
+  const deleteBodyTemplate = (rowData) => {
+    return (
+      <div onmousedown={deleteEvent(rowData.id)}>
+        <i className="pi pi-delete-left" style={{ color: "red" }}></i>
+      </div>
+    );
+  };
+
   return (
     <Card title={selectedUser[0].firstName}>
-      <p>Selected Log: {selectedLog}</p>
-      <DataTable
-        value={selectedLogs}
-        selectionMode="single"
-        selection={selectedLog}
-        onSelectionChange={(e) => setSelectedLog(e.value)}
-        dataKey="id"
-      >
+      <DataTable value={selectedLogs} dataKey="id">
         <Column header="begin/einde" body={eventBodyTemplate}></Column>
         <Column header="datum/tijd" body={stampBodyTemplate}></Column>
+        <Column body={deleteBodyTemplate}></Column>
       </DataTable>
-      {/* <table>
-        <thead>
-          <tr>
-            <th>In/Uit</th>
-            <th>Datum/Tijd</th>
-          </tr>
-        </thead>
-        <tbody>
-          {selectedLogs.map((log) => (
-            <TableItem
-              key={log.id}
-              logId={log.logId}
-              timestamp={log.timestamp}
-              userId={log.userId}
-              onclick={deleteEvent(log.logId)}
-            />
-          ))}
-        </tbody>
-      </table> */}
     </Card>
   );
 };

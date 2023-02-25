@@ -18,20 +18,24 @@ const EventSelect = (props) => {
   const { eventSelection, setEventSelection, events, userSelection } = props;
   console.log("EventSelect props: ", props);
 
-  const handleClickButton = (e) => {
-    console.log("clicked!", e);
-    setEventSelection(e.eventId);
-    saveEvent();
-  };
+  // const handleClickButton = (e) => {
+  //   console.log("clicked!", e);
+  //   setEventSelection(e.eventId);
+  //   saveEvent();
+  // };
   // Saves a new message to Cloud Firestore.
-  async function saveEvent() {
+  async function saveEvent(eventId) {
     // Add a new message entry to the Firebase database.
     try {
       await addDoc(collection(getFirestore(), "logs"), {
         userId: userSelection,
-        eventId: eventSelection,
+        eventId: eventId,
         timestamp: serverTimestamp(),
       });
+      setEventSelection(eventId);
+      console.log(
+        `writing new message ${eventId} to Firebase Database succeded`
+      );
     } catch (error) {
       console.error("Error writing new message to Firebase Database", error);
     }
@@ -46,7 +50,7 @@ const EventSelect = (props) => {
             key={event.id}
             severity={eventSelection !== event.eventId ? "" : "success"}
             outlined={eventSelection !== event.eventId}
-            onClick={() => handleClickButton(event)}
+            onClick={() => saveEvent(event.eventId)}
           />
         ))}
       </div>
